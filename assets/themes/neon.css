@@ -1,0 +1,78 @@
+/* Ghostlock Neon Dark Theme */
+:root {
+  --ghost-primary: #0A0E27;
+  --ghost-accent: #00D4FF;
+  --ghost-secondary: #9D4EDD;
+  --ghost-warn: #FF006E;
+  --ghost-success: #00F5FF;
+  --ghost-text: #E0E7FF;
+  --ghost-muted: #5A6585;
+  --ghost-ghost: #8B92B5;
+  --ghost-bg: #0D1117;
+  --ghost-surface: #101534;
+}
+
+body {
+  background: var(--ghost-primary);
+  color: var(--ghost-text);
+  font-family: 'Inter', sans-serif;
+  line-height: 1.5;
+}
+
+code, pre {
+  font-family: 'IBM Plex Mono', monospace;
+  background: var(--ghost-surface);
+  border: 1px solid rgba(0,212,255,0.2);
+  border-radius: 4px;
+  padding: 0.2em 0.4em;
+}
+
+h1, h2, h3 {
+  color: var(--ghost-accent);
+  font-weight: bold;
+}
+
+a {
+  color: var(--ghost-accent);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+a:hover {
+  color: var(--ghost-success);
+  text-shadow: 0 0 10px rgba(0,212,255,0.5);
+}
+
+.card {
+  background: var(--ghost-surface);
+  border: 1px solid rgba(0,212,255,0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 0 20px rgba(0,212,255,0.1);
+  transition: box-shadow 0.3s;
+}
+
+.card:hover {
+  box-shadow: 0 0 30px rgba(0,212,255,0.3);
+}
+
+.button-primary {
+  background: var(--ghost-accent);
+  color: var(--ghost-primary);
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.button-primary:hover {
+  background: var(--ghost-success);
+  box-shadow: 0 0 20px rgba(0,212,255,0.5);
+}
+
+.log-info { color: var(--ghost-accent); }
+.log-success { color: var(--ghost-success); font-weight: bold; }
+.log-warn { color: var(--ghost-warn); }
+.log-ghost { color: var(--ghost-ghost); opacity: 0.7; }

@@ -1,0 +1,30 @@
+{
+  "name": "Ghostlock Neon Dark",
+  "version": "1.0.0",
+  "colors": {
+    "primary": "#0A0E27",
+    "accent": "#00D4FF",
+    "secondary": "#9D4EDD",
+    "warn": "#FF006E",
+    "success": "#00F5FF",
+    "text": "#E0E7FF",
+    "muted": "#5A6585",
+    "ghost": "#8B92B5",
+    "background": "#0D1117",
+    "surface": "#101534"
+  },
+  "typography": {
+    "code": "IBM Plex Mono",
+    "ui": "Inter",
+    "mono": "JetBrains Mono"
+  },
+  "spacing": {
+    "grid": 8,
+    "radius_sharp": 4,
+    "radius_card": 12
+  },
+  "shadows": {
+    "neon": "0 0 20px rgba(0,212,255,0.3)",
+    "violet": "0 0 20px rgba(157,78,221,0.3)"
+  }
+}

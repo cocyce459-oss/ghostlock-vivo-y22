@@ -1,0 +1,47 @@
+{
+  "device": {
+    "name": "Vivo Y22",
+    "codename": "V2127",
+    "alt_codename": "PD2226F_EX",
+    "manufacturer": "vivo",
+    "soc": "MediaTek MT6769Z",
+    "soc_marketing": "Helio G85",
+    "arch": "arm64",
+    "abis": ["arm64-v8a", "armeabi-v7a"],
+    "android_versions": ["12", "13"],
+    "funtouch_os": ["12", "13"],
+    "kernel_versions": ["4.14.186+", "4.14.193+"],
+    "ram": ["4GB", "6GB"],
+    "storage": ["64GB", "128GB"],
+    "chipset_details": {
+      "cpu": "Octa-core (2x2.0 GHz Cortex-A75 & 6x1.8 GHz Cortex-A55)",
+      "gpu": "Mali-G52 MC2",
+      "process": "12nm"
+    }
+  },
+  "security": {
+    "selinux": "enforcing",
+    "avb": "2.0",
+    "verified_boot": true,
+    "dm_verity": true,
+    "kptr_restrict": 1,
+    "kallsyms_restricted": true,
+    "kaslr": true,
+    "pan": true,
+    "pxn": true
+  },
+  "exploit": {
+    "cve": "CVE-2026-43499",
+    "type": "futex_pi_use_after_free",
+    "original_author": "F3 Aresin",
+    "port": "Ghostlock Vivo Y22",
+    "requirements": [
+      "kernel < 5.10 with vulnerable futex_requeue",
+      "CONFIG_FUTEX_PI enabled (Vivo stock: yes)",
+      "ability to run native binary via adb or app"
+    ],
+    "success_rate": "High (manual offset required due to stripped kallsyms)"
+  },
+  "offsets_profile": "vivo-y22-4.14.186",
+  "notes": "Vivo Y22 ships stripped vmlinux (Kernel.elf) with no symbols. Manual disassembly via ADRP + LDR analysis required. See docs/OFFSETS.md and tools/analyze_vmlinux.py"
+}
