@@ -1,0 +1,54 @@
+# Ghostlock Vivo Y22 - Gitignore
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+env/
+.env
+*.egg-info/
+dist/
+build/
+*.egg
+
+# C
+*.o
+*.out
+ghostlock_y22
+ghostlock_y22_host
+ghostlock_y22_android
+a.out
+
+# Device files
+Kernel.elf
+vmlinux
+boot.img
+*.img
+*.bin
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Secrets
+*.key
+*.pem
+
+# Temporary
+tmp/
+temp/
+*.tmp

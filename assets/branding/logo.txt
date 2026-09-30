@@ -1,0 +1,23 @@
+Ghostlock Logo Concepts
+
+1. Minimalist Ghost + Lock:
+
+   .--.
+  /    \
+ |  ◈  |   GHOSTLOCK
+ |  _  |   VIVO Y22
+  \_/
+
+2. Neon Lock:
+
+  ╭─────╮
+  │ ◈   │  GHOST
+  │  🔒 │  LOCK
+  ╰─────╯  VIVO Y22
+
+3. ASCII Premium:
+
+  ██████╗ ██╗  ██╗ ██████╗ ███████╗████████╗██╗      ██████╗  ██████╗██╗  ██╗
+  (full banner in banner.txt)
+
+Color: Neon Cyan #00D4FF on Deep Void #0A0E27

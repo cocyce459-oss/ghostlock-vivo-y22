@@ -1,0 +1,33 @@
+{
+  "ghostlock": {
+    "version": "2.0.0-y22-aresin",
+    "codename": "F3 Aresin",
+    "theme": "neon-dark",
+    "device": "vivo-y22"
+  },
+  "exploit": {
+    "cve": "CVE-2026-43499",
+    "type": "futex_pi_uaf",
+    "auto_kaslr": true,
+    "verify_offsets": true,
+    "retry_count": 3,
+    "timeout_ms": 5000
+  },
+  "device": {
+    "name": "Vivo Y22",
+    "codename": "V2127",
+    "soc": "MT6769Z",
+    "kernel": "4.14.186+",
+    "android": ["12", "13"]
+  },
+  "paths": {
+    "vmlinux": "./Kernel.elf",
+    "exploit_binary": "./src/core/exploit/ghostlock_y22",
+    "exploit_host": "./src/core/exploit/ghostlock_y22_host"
+  },
+  "safety": {
+    "backup_boot": true,
+    "warn_on_locked_bootloader": true,
+    "require_confirmation": true
+  }
+}

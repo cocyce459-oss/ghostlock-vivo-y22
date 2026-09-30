@@ -1,0 +1,60 @@
+{
+  "devices": [
+    {
+      "name": "Vivo Y22",
+      "codename": "V2127",
+      "soc": "MT6769Z",
+      "kernel": "4.14.186+",
+      "android": ["12", "13"],
+      "exploit": "CVE-2026-43499",
+      "status": "supported",
+      "offsets": "vivo-y22-4.14.186",
+      "tested": true,
+      "notes": "Primary target, stripped vmlinux handled"
+    },
+    {
+      "name": "Vivo Y22s",
+      "codename": "V2127",
+      "soc": "Snapdragon 680",
+      "kernel": "4.19+",
+      "android": ["12", "13"],
+      "exploit": "CVE-2026-43499",
+      "status": "likely",
+      "offsets": "vivo-y22s-4.19",
+      "tested": false,
+      "notes": "Snapdragon variant, needs offset update"
+    },
+    {
+      "name": "Vivo Y21",
+      "codename": "V2111",
+      "soc": "MT6765",
+      "kernel": "4.14.186+",
+      "android": ["11", "12"],
+      "exploit": "CVE-2026-43499",
+      "status": "likely",
+      "offsets": "vivo-y21-4.14.186",
+      "tested": false,
+      "notes": "Similar MTK, same technique"
+    },
+    {
+      "name": "Infinix Hot 12",
+      "codename": "X6817",
+      "soc": "MT6769H",
+      "kernel": "4.14.186+",
+      "android": ["12"],
+      "exploit": "CVE-2026-43499",
+      "status": "possible",
+      "offsets": "mt6769-generic",
+      "tested": false,
+      "notes": "Same SoC family"
+    }
+  ],
+  "exploit_matrix": {
+    "CVE-2026-43499": {
+      "type": "futex_pi_uaf",
+      "kernels": ["4.14", "4.19", "5.4", "5.10"],
+      "requires": ["CONFIG_FUTEX_PI=y", "KASLR leak or brute-force"],
+      "success_rate": "High with correct offsets"
+    }
+  }
+}
