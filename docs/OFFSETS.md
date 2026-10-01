@@ -14,10 +14,35 @@ This means traditional offset extraction via `kallsyms` fails. We must use **man
 
 - **Link**: https://drive.google.com/file/d/1yX1l9SKl-oFFru-prRG-UmCiLfC-Y8MN/view?usp=drivesdk
 - **Name**: Kernel.elf / vmlinux_y22
-- **Size**: ~32MB
+- **Size**: ~32MB (33,094,757 bytes)
 - **Arch**: ARM64, ELF 64-bit LSB executable
-- **Kernel**: 4.14.186+ (Vivo stock, MT6769Z)
-- **Stripped**: Yes
+- **Stripped**: No — it ships a `.symtab` (~62k entries), though
+  `init_task` / `init_cred` are **not** among them, so the ADRP path is
+  still required for those two symbols.
+
+### ⚠️ Kernel version — verify before you trust any offset
+
+The vmlinux currently published at that Drive link reports:
+
+```
+Linux version 4.19.191-g6c1eb6c2b936-dirty
+```
+
+That is **4.19**, not the 4.14.186 the device profile assumes. The
+`task_struct` offsets in `src/core/exploit/target.h` were reconstructed for
+4.14, and layout differs between the two series. **Do not run the exploit
+against a 4.19 kernel using the 4.14 offsets** — that is a kernel panic at
+best.
+
+Both `tools/analyze_vmlinux.py` and `scripts/preflight.sh` now check this and
+fail loudly. Check your own device with:
+
+```bash
+adb shell uname -r
+```
+
+If your device does not report 4.14.x, re-derive the offsets in this document
+for your actual kernel before going anywhere near hardware.
 
 ## Methodology - ADRP Scanner
 
@@ -39,7 +64,7 @@ unzip vivo_y22_stock.zip boot.img
 ### 2. Use analyze_vmlinux.py
 
 ```bash
-python3 tools/analyze_vmlinux.py --vmlinux Kernel.elf --device vivo-y22 -v
+python3 tools/analyze_vmlinux.py --vmlinux Kernel.elf --device vivo-y22 --verbose
 ```
 
 This tool:

@@ -13,10 +13,10 @@ cd "$ROOT_DIR"
 
 echo "[*] Root dir: $ROOT_DIR"
 
-echo "[1/4] Checking Python..."
+echo "[1/3] Checking Python..."
 python3 --version || { echo "Python3 required"; exit 1; }
 
-echo "[2/4] Creating venv..."
+echo "[2/3] Creating venv..."
 if [ ! -d "venv" ]; then
     python3 -m venv venv
     echo "[✓] venv created"
@@ -24,29 +24,33 @@ else
     echo "[✓] venv exists"
 fi
 
-echo "[3/4] Installing dependencies..."
+echo "[3/3] Installing dependencies..."
 source venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
 echo "[✓] Dependencies installed"
 
-echo "[4/4] Building exploit..."
-cd src/core/exploit
-make host || echo "[!] Host build failed, but continuing"
+# NOTE: Building is intentionally NOT done here.
+# Previously setup.sh ran `make host`, and `make all` then ran build.sh
+# which built the same target again. Build is now a separate explicit step:
+#     make build
 cd "$ROOT_DIR"
 
 echo ""
-echo -e "\033[92m[✓] Setup complete!\033[0m"
+echo -e "\033[92m[✓] Setup complete (deps only - nothing was built)\033[0m"
 echo ""
 echo "Next steps:"
+echo "  make build                      # build host (+ android if NDK present)"
 echo "  source venv/bin/activate"
 echo "  python src/app/main.py --help"
 echo "  python src/app/main.py status"
-echo "  python src/app/main.py exploit --offline  # demo mode"
+echo "  python src/app/main.py exploit --offline  # demo mode, no device"
 echo ""
-echo "For real device:"
-echo "  1. Download vmlinux: python tools/fetch_vmlinux.py"
-echo "  2. Analyze: python tools/analyze_vmlinux.py --vmlinux Kernel.elf -v"
-echo "  3. Connect Vivo Y22 via adb"
-echo "  4. Run: python src/app/main.py exploit"
+echo "Building on Google Colab (CPU-only) instead? See docs/COLAB_BUILD.md"
+echo ""
+echo "Before touching a real device:"
+echo "  1. Fetch vmlinux:   python tools/fetch_vmlinux.py"
+echo "  2. Analyze it:      make analyze VMLINUX=Kernel.elf"
+echo "  3. Run preflight:   make preflight"
+echo "  4. Then, and only then, connect the device."
 echo ""

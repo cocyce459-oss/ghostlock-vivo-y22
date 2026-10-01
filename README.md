@@ -68,44 +68,90 @@ This is not just functional—this is *intentional*.
 
 ## 🚀 **Quick Start**
 
+> **Do not paste this page into a terminal.**
+> Each block below is a separate stage. Stages 1–3 are safe and repeatable.
+> Stage 4 is the only one that touches your phone — run it on its own, after
+> you've read [`docs/safety-guide.md`](docs/safety-guide.md).
+
+### Stage 1 — Get the code
+
 ```bash
-# Clone the void
 git clone https://github.com/cocyce459-oss/ghostlock-vivo-y22.git
 cd ghostlock-vivo-y22
+```
 
-# Setup (creates venv, installs deps, builds exploit)
+### Stage 2 — Environment
+
+Run **one** of these, not both. `setup.sh` does the venv and the dependency
+install for you; the manual block is only if you'd rather not use the script.
+
+```bash
+# Option A (recommended)
 bash scripts/setup.sh
 source venv/bin/activate
+```
 
-# Or manually
+<details>
+<summary>Option B — manual (only if the script fails)</summary>
+
+```bash
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-make host
+```
 
-# Run premium CLI
-python src/app/main.py
-python src/app/main.py status
-python src/app/main.py exploit --offline   # demo mode, no device needed
+</details>
 
-# For real device
-# 1. Download vmlinux (Kernel.elf) from:
-#    https://drive.google.com/file/d/1yX1l9SKl-oFFru-prRG-UmCiLfC-Y8MN/view
-#    Or: python tools/fetch_vmlinux.py
+### Stage 3 — Build and explore (no device involved)
 
-# 2. Analyze for offsets
-python tools/analyze_vmlinux.py --vmlinux Kernel.elf --device vivo-y22 -v
+```bash
+make build              # host binary; android binary only if the NDK is present
+make analyze VMLINUX=Kernel.elf   # only after you've fetched the vmlinux
+python src/app/main.py exploit --offline   # demo mode, safe to repeat
+```
 
-# 3. Connect Vivo Y22 via adb, enable USB Debugging
-adb devices
+> `setup.sh` no longer builds. If you used an older revision and saw
+> "Setup complete!" followed by a finished build, that's why — the build now
+> has its own explicit step so it can't happen twice by accident.
 
-# 4. Run exploit on device
-python src/app/main.py exploit
-# Or manually:
+### Stage 4 — Real device (read the safety guide first)
+
+**Stop here and read [`docs/safety-guide.md`](docs/safety-guide.md) and
+[`docs/OFFSETS.md`](docs/OFFSETS.md).** The exploit writes to kernel memory.
+Wrong offsets panic the device.
+
+Confirm your offsets are valid for *your* build:
+
+```bash
+make preflight          # read-only; exits non-zero if it is not safe to proceed
+```
+
+Only once that passes:
+
+```bash
+adb devices             # confirm the phone is authorized
+```
+
+```bash
 adb push src/core/exploit/ghostlock_y22 /data/local/tmp/
 adb shell chmod +x /data/local/tmp/ghostlock_y22
+```
+
+```bash
+# This one actually runs the exploit. Run it alone.
 adb shell /data/local/tmp/ghostlock_y22
 ```
+
+### Building on Google Colab instead
+
+Everything except the final device step runs on a free Colab **CPU** runtime:
+
+```bash
+make colab
+```
+
+See [`docs/COLAB_BUILD.md`](docs/COLAB_BUILD.md), or open
+[`colab/Ghostlock_Colab_Build.ipynb`](colab/Ghostlock_Colab_Build.ipynb).
 
 ---
 
@@ -372,27 +418,52 @@ Full guide: `docs/OFFSETS.md`
 
 ## 🔧 **Build & Test**
 
+**Setup** (once):
+
 ```bash
-# Setup
 bash scripts/setup.sh
 source venv/bin/activate
+```
 
-# Build
+**Build** — these are the same command, run from the repo root or from
+`src/core/exploit`; pick one, not both:
+
+```bash
 make host
-# or
-cd src/core/exploit && make host
+```
 
-# Test offline demo (no device needed)
+```bash
+make android      # needs the Android NDK; refuses to emit an x86 binary
+```
+
+**Analyze the vmlinux** (after fetching it with `python tools/fetch_vmlinux.py`):
+
+```bash
+make analyze VMLINUX=Kernel.elf
+```
+
+**Offline test** — no device, safe to repeat:
+
+```bash
 python src/app/main.py exploit --offline
 ./src/core/exploit/ghostlock_y22_host
+```
 
-# Test with device
+**Preflight** — read-only gate before any device work:
+
+```bash
+make preflight
+```
+
+**Device** — only after the preflight passes and you've read the safety guide:
+
+```bash
 adb devices
 python src/app/main.py status
-python src/app/main.py exploit
+```
 
-# Analyze vmlinux
-python tools/analyze_vmlinux.py --vmlinux Kernel.elf --device vivo-y22 -v
+```bash
+python src/app/main.py exploit
 ```
 
 ---
