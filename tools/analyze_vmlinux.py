@@ -4,18 +4,26 @@ Ghostlock Vivo Y22 - vmlinux Analyzer
 Handles stripped symbols via ADRP scanning + Capstone
 
 Usage:
-  python3 tools/analyze_vmlinux.py --vmlinux Kernel.elf --device vivo-y22 -v
+  python3 tools/analyze_vmlinux.py --vmlinux Kernel.elf --device vivo-y22 --verbose
   python3 tools/analyze_vmlinux.py --vmlinux Kernel.elf --json
+
+NOTE: -v is the short flag for --verbose (not --vmlinux).
+      -k is the short flag for --vmlinux.
 
 This tool reconstructs offsets for stripped vmlinux (Vivo Y22 case)
 """
 
 import argparse
+import re
 import struct
 import json
 import sys
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
+
+# Kernel series the Vivo Y22 profile offsets in target.h were reconstructed for.
+# Used to warn when a supplied vmlinux is from a different kernel series.
+EXPECTED_KERNEL_SERIES = "4.14"
 
 # Try capstone
 try:
@@ -291,20 +299,38 @@ class VmlinuxAnalyzer:
         
         # Additional checks
         log_info("Checking for Linux version string...")
-        version_strings = [b"Linux version", b"4.14.186", b"4.14.193"]
-        for vs in version_strings:
-            offs = self.find_string(vs)
-            if offs:
-                log_ok(f"Found '{vs.decode()}' at file off {hex(offs[0])}")
-                # Try to read surrounding
-                start = max(0, offs[0]-20)
-                end = min(len(self.data), offs[0]+100)
-                snippet = self.data[start:end]
-                # Clean non-printable
-                clean = ''.join(chr(b) if 32 <= b < 127 else '.' for b in snippet)
-                log_ghost(f"Version snippet: {clean}")
-                self.offsets['linux_version_file_off'] = offs[0]
-                break
+        offs = self.find_string(b"Linux version")
+        if offs:
+            start = offs[0]
+            end = min(len(self.data), start + 160)
+            snippet = self.data[start:end]
+            clean = ''.join(chr(b) if 32 <= b < 127 else '.' for b in snippet)
+            log_ok(f"Found 'Linux version' at file off {hex(offs[0])}")
+            log_ghost(f"Version snippet: {clean}")
+            self.offsets['linux_version_file_off'] = offs[0]
+
+            # Parse the actual kernel release, e.g. "4.19.191-g6c1eb6c2b936-dirty"
+            m = re.search(rb"Linux version (\d+\.\d+\.\d+[^\s(]*)", self.data[start:end])
+            if m:
+                actual = m.group(1).decode('ascii', 'replace')
+                self.offsets['linux_version'] = actual
+                if not actual.startswith(EXPECTED_KERNEL_SERIES):
+                    log_warn("=" * 66)
+                    log_warn(f"KERNEL VERSION MISMATCH")
+                    log_warn(f"  This vmlinux is : {actual}")
+                    log_warn(f"  Profile expects: {EXPECTED_KERNEL_SERIES}.x (Vivo Y22 stock)")
+                    log_warn("")
+                    log_warn("  The task_struct offsets in target.h were reconstructed")
+                    log_warn("  for the expected series. They are NOT validated for this")
+                    log_warn("  build. Feeding them to the exploit risks a kernel panic.")
+                    log_warn("")
+                    log_warn("  Re-derive offsets for this exact kernel before running on")
+                    log_warn("  hardware. See docs/OFFSETS.md.")
+                    log_warn("=" * 66)
+                else:
+                    log_ok(f"Kernel version {actual} matches expected series {EXPECTED_KERNEL_SERIES}.x")
+        else:
+            log_warn("No 'Linux version' string found - cannot verify kernel series")
         
         result = {
             'device': self.device,
@@ -341,10 +367,10 @@ class VmlinuxAnalyzer:
 
 def main():
     parser = argparse.ArgumentParser(description="Ghostlock Vivo Y22 vmlinux Analyzer - handles stripped symbols")
-    parser.add_argument("--vmlinux", "-v", type=Path, required=True, help="Path to Kernel.elf / vmlinux")
+    parser.add_argument("--vmlinux", "-k", type=Path, required=True, help="Path to Kernel.elf / vmlinux")
     parser.add_argument("--device", "-d", default="vivo-y22", help="Device profile")
     parser.add_argument("--json", action="store_true", help="Output JSON")
-    parser.add_argument("--verbose", action="store_true", help="Verbose")
+    parser.add_argument("--verbose", "-v", action="store_true", help="Verbose")
     parser.add_argument("--output", "-o", type=Path, help="Output target.h file")
     
     args = parser.parse_args()

@@ -24,7 +24,7 @@
 - Try alternative offsets:
   - tasks: 0x448, 0x4c0, 0x4e8, 0x5a0
   - cred: 0x6b0, 0x788, 0x7a8, 0x7b0
-- Run `python3 tools/analyze_vmlinux.py --vmlinux Kernel.elf -v` to get exact
+- Run `python3 tools/analyze_vmlinux.py --vmlinux Kernel.elf --verbose` to get exact
 
 ### 4. "Exploit returns but no root"
 
@@ -54,7 +54,7 @@
 
 ```bash
 # Verbose analyze
-python3 tools/analyze_vmlinux.py --vmlinux Kernel.elf --device vivo-y22 -v
+python3 tools/analyze_vmlinux.py --vmlinux Kernel.elf --device vivo-y22 --verbose
 
 # Host exploit with strace
 strace ./src/core/exploit/ghostlock_y22_host
