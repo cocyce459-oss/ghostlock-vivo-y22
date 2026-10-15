@@ -1,5 +1,5 @@
 # Ghostlock Vivo Y22 - Root Makefile
-.PHONY: all setup build host android clean status exploit analyze preflight colab help
+.PHONY: all setup build host android clean status exploit analyze preflight colab dis verify-offsets help
 
 PYTHON := python3
 VENV := venv
@@ -46,6 +46,18 @@ analyze:
 preflight:
 	@bash scripts/preflight.sh
 
+# Disassemble a symbol from the vmlinux (no capstone/cross-binutils needed)
+dis:
+	@test -n "$(SYM)" || { echo "[!] Usage: make dis SYM=get_task_cred VMLINUX=Kernel.elf"; exit 1; }
+	@$(PYTHON) tools/dis.py $(VMLINUX) --sym $(SYM) --span $(or $(SPAN),0x100) \
+		|| $(PY) tools/dis.py $(VMLINUX) --sym $(SYM) --span $(or $(SPAN),0x100)
+
+# Verify the 4.19 offset table against the vmlinux
+verify-offsets:
+	@test -f "$(or $(VMLINUX),Kernel.elf)" || { echo "[!] Need VMLINUX=Kernel.elf"; exit 1; }
+	@$(PYTHON) tools/verify_offsets.py $(or $(VMLINUX),Kernel.elf) \
+		|| $(PY) tools/verify_offsets.py $(or $(VMLINUX),Kernel.elf)
+
 colab:
 	@echo "[*] Colab (CPU-only) instructions: docs/COLAB_BUILD.md"
 	@echo "[*] Or open colab/Ghostlock_Colab_Build.ipynb in Google Colab"
@@ -60,5 +72,7 @@ help:
 	@echo "  exploit  - Run exploit in offline demo mode"
 	@echo "  analyze  - Analyze vmlinux: make analyze VMLINUX=Kernel.elf"
 	@echo "  preflight- Verify kernel/offsets match before touching a device"
+	@echo "  dis       - Disassemble a symbol: make dis SYM=remove_waiter VMLINUX=Kernel.elf"
+	@echo "  verify-offsets - Re-derive and check the 4.19 offset table"
 	@echo "  colab    - Show Colab (CPU-only) build instructions"
 	@echo "  clean    - Clean build artifacts"
