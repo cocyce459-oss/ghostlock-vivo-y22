@@ -8,6 +8,45 @@ gcc and Python already present, and you can throw it away when you're done.
 
 ---
 
+## ⚠️ Check the runtime before you run anything
+
+**Runtime → Runtime type.** Colab does *not* always default to CPU-only, and
+neither does it stay that way — a previously-visited notebook can reopen with
+your last setting, which may be a T4 or an L4 **requiring payment**.
+
+Confirm the badge in the top-right says **CPU** before running the NDK cells.
+You can also pin it in code:
+
+```python
+# Fail fast if this notebook is not on a free CPU runtime.
+import os, sys
+if "google.colab" in sys.modules:
+    import google.colab as _c
+    print("runtime:", os.popen("cat /proc/cpuinfo | grep 'model name' | head -1").read().strip())
+    print("GPU visible:", os.path.exists("/dev/nvidia0"))
+```
+
+`GPU visible: True` means you are on an accelerated (billable) runtime. Stop
+and switch it back to CPU.
+
+### What Colab is and is not good for
+
+| | |
+|---|---|
+| **Good** | the ~2 minute offset analysis, fetching the vmlinux, verifying offsets |
+| **Poor** | the NDK download + build (~1 GB, long, easily interrupted) |
+
+Colab is a **demo notebook environment**, not build infrastructure. It
+disconnects idle runtimes, throttles sustained load, and offers no persistence.
+Treat a Colab run as disposable: if the runtime drops mid-build, re-run the
+cell — don't assume the NDK is still there. For a long or repeatable build, a
+local machine or a persistent VM is the better tool.
+
+Also note: the RISC-V note below. On a CPU-only runtime there is no
+accelerator, which is exactly what the analysis step wants.
+
+---
+
 ## What you can do on Colab
 
 | Step | Colab? | Notes |
@@ -30,9 +69,12 @@ Open `colab/Ghostlock_Colab_Build.ipynb` in Colab:
 
 <https://colab.research.google.com/github/cocyce459-oss/ghostlock-vivo-y22/blob/main/colab/Ghostlock_Colab_Build.ipynb>
 
-Runtime → **Runtime type → CPU only** (this is the default; just leave it).
+Runtime → **Runtime type → CPU only.** Do not assume it is already set — see
+the warning above. Then **Runtime → Run all.**
 
-Then: **Runtime → Run all.**
+The notebook also starts with a cell that prints the detected CPU and whether a
+GPU device is visible, so you can confirm the runtime type from inside the
+notebook.
 
 ---
 
